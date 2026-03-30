@@ -16,4 +16,4 @@ COPY templates/ templates/
 
 EXPOSE 5000
 
-CMD ["python3", "app.py"]
+CMD ["gunicorn", "--workers", "1", "--threads", "4", "--bind", "0.0.0.0:5000", "app:app"]
