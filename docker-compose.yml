@@ -1,7 +1,7 @@
 services:
-  spotiflac-custom:
+  spotiflac-server:
     build: .
-    container_name: spotiflac-custom
+    container_name: spotiflac-server
     ports:
       - "5000:5000"
     volumes:
