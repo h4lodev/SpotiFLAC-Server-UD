@@ -31,8 +31,8 @@ If you are using [Runtipi](https://runtipi.io/) to manage your home server, foll
 
 2. **Build the Docker image locally:**
     ```bash
-    docker build -t spotiflac-server:latest .```
-
+    docker build -t spotiflac-server:latest . ``````
+    
     Add as a Custom App in Runtipi:
 
         Open your Runtipi Dashboard -> App Store -> Add Custom App.
