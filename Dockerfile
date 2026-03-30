@@ -9,7 +9,7 @@ COPY requirements.txt .
 
 # Hem web arayüzü gereksinimlerini hem de resmi SpotiFLAC paketini kur
 RUN pip install --no-cache-dir -r requirements.txt
-RUN pip install --no-cache-dir SpotiFLAC
+RUN pip install --no-cache-dir --upgrade SpotiFLAC
 
 COPY app.py .
 COPY templates/ templates/
