@@ -3,48 +3,283 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SpotiFLAC Downloader</title>
+    <title>SpotiFLAC Studio</title>
     <style>
-        body { font-family: sans-serif; max-width: 700px; margin: 40px auto; padding: 20px; color: #333; }
-        input[type="text"] { width: 70%; padding: 10px; margin-right: 10px; border: 1px solid #ccc; border-radius: 4px; }
-        button { padding: 10px 20px; cursor: pointer; background: #0066cc; color: white; border: none; border-radius: 4px; }
-        button:disabled { background: #ccc; cursor: not-allowed; }
-        #log-container { margin-top: 20px; background: #2b2b2b; color: #a9b7c6; padding: 15px; border-radius: 5px; min-height: 50px; white-space: pre-wrap; font-family: monospace; display: none; max-height: 200px; overflow-y: auto; }
-        .spinner { display: inline-block; animation: spin 1s linear infinite; }
+        /* Modern & Sophisticated Dark Theme */
+        :root {
+            --bg-body: #000000;
+            --bg-container: #121212;
+            --bg-input: #1e1e1e;
+            --bg-input-focus: #2a2a2a;
+            --primary-neon: #1DB954; /* Spotify Green */
+            --primary-hover: #21e065;
+            --text-primary: #FFFFFF;
+            --text-secondary: #A0A0A0; /* Soft gray */
+            --border-muted: #282828;
+            --danger-neon: #ff4d4d;
+            --font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--bg-body);
+            color: var(--text-primary);
+            display: flex;
+            justify-content: center;
+            padding: 50px 20px;
+            margin: 0;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            background-color: var(--bg-container);
+            width: 100%;
+            max-width: 680px;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+            border: 1px solid var(--border-muted);
+        }
+
+        /* Logo Area */
+        h2 {
+            text-align: center;
+            margin-top: 0;
+            margin-bottom: 35px;
+            font-size: 32px;
+            font-weight: 800;
+            letter-spacing: -1px;
+            text-transform: lowercase;
+        }
+
+        h2 span.spot { color: var(--text-primary); }
+        h2 span.flac { color: var(--primary-neon); text-shadow: 0 0 10px rgba(29, 185, 84, 0.5); }
+
+        /* Unified Download Form */
+        form.download-form {
+            display: flex;
+            background-color: var(--bg-input);
+            border-radius: 50px;
+            padding: 4px;
+            border: 1px solid transparent;
+            transition: border-color 0.3s ease, background-color 0.3s ease;
+            margin-bottom: 25px;
+        }
+
+        form.download-form:focus-within {
+            border-color: var(--border-muted);
+            background-color: var(--bg-input-focus);
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 14px 25px;
+            border-radius: 50px;
+            border: none;
+            background-color: transparent;
+            color: var(--text-primary);
+            font-size: 16px;
+            outline: none;
+        }
+
+        input[type="text"]::placeholder {
+            color: var(--text-secondary);
+        }
+
+        button.primary-btn {
+            background-color: var(--primary-neon);
+            color: #000000;
+            font-weight: 700;
+            border: none;
+            padding: 14px 30px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 15px;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        button.primary-btn:hover:not(:disabled) {
+            background-color: var(--primary-hover);
+        }
+
+        button.primary-btn:active:not(:disabled) {
+            transform: scale(0.98);
+        }
+
+        button.primary-btn:disabled {
+            background-color: #333333;
+            color: #777777;
+            cursor: not-allowed;
+        }
+
+        /* Status & Log Area */
+        #status-text {
+            font-size: 15px;
+            font-weight: 500;
+            margin: 15px 0;
+            min-height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        #log-container {
+            margin-top: 15px;
+            background-color: #000000;
+            color: var(--text-secondary);
+            padding: 15px;
+            border-radius: 10px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 13px;
+            display: none;
+            max-height: 180px;
+            overflow-y: auto;
+            border: 1px solid var(--border-muted);
+        }
+
+        /* Modern Spinner */
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            border-top-color: currentColor;
+            animation: spin 0.8s linear infinite;
+        }
         @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        /* File Library Section */
+        .file-section {
+            margin-top: 45px;
+            padding-top: 30px;
+            border-top: 1px solid var(--border-muted);
+        }
+
+        .file-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .file-header h3 {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        button.secondary-btn {
+            background-color: transparent;
+            color: var(--text-primary);
+            border: 1px solid var(--text-secondary);
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: border-color 0.2s ease, transform 0.1s ease;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        button.secondary-btn:hover {
+            border-color: var(--text-primary);
+        }
         
-        /* Dosya Listesi Stilleri */
-        .file-section { margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee; }
-        #file-list { background: #f9f9f9; padding: 15px; border-radius: 5px; list-style-type: none; max-height: 300px; overflow-y: auto; border: 1px solid #eee; margin-top: 10px; }
-        #file-list li { padding: 8px 0; border-bottom: 1px solid #eaeaea; font-size: 0.9em; }
-        #file-list li:last-child { border-bottom: none; }
+        button.secondary-btn:active {
+            transform: scale(0.98);
+        }
+
+        #file-list {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        #file-list li {
+            padding: 14px 20px;
+            border-radius: 10px;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            color: var(--text-secondary);
+            transition: background-color 0.2s ease;
+            margin-bottom: 4px;
+        }
+        
+        #file-list li:last-child {
+            margin-bottom: 0;
+        }
+
+        #file-list li:hover {
+            background-color: var(--bg-input);
+            color: var(--text-primary);
+        }
+
+        #file-list li span.icon {
+            margin-right: 15px;
+            font-size: 18px;
+            opacity: 0.7;
+            color: var(--primary-neon);
+        }
+
+        /* Modern Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #404040; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #606060; }
+
+        /* Responsive */
+        @media (max-width: 550px) {
+            .container { padding: 25px; }
+            h2 { font-size: 26px; }
+            input[type="text"] { font-size: 15px; padding: 12px 20px; }
+            button.primary-btn { padding: 12px 20px; font-size: 14px; }
+        }
     </style>
 </head>
 <body>
-    <h2>SpotiFLAC Web Arayüzü</h2>
-    <form id="downloadForm">
-        <input type="text" name="url" placeholder="Spotify Albüm/Şarkı Linkini Yapıştır" required>
-        <button type="submit" id="submitBtn">İndir</button>
-    </form>
-    
-    <h4 id="status-text" style="color: #0066cc;"></h4>
-    <div id="log-container"></div>
 
-    <div class="file-section">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <h3 style="margin: 0;">Sunucudaki Müzikler</h3>
-            <button type="button" onclick="loadFiles()" style="padding: 5px 10px; font-size: 0.8em;">🔄 Yenile</button>
+    <div class="container">
+        <h2><span class="spot">Spoti</span><span class="flac">FLAC</span></h2>
+        
+        <form id="downloadForm" class="download-form">
+            <input type="text" name="url" placeholder="Spotify Linkini Yapıştır (Albüm, Çalma Listesi...)" required autocomplete="off">
+            <button type="submit" id="submitBtn" class="primary-btn">
+                <span>İndir</span>
+            </button>
+        </form>
+        
+        <div id="status-text" style="color: var(--text-secondary);"></div>
+        <div id="log-container"></div>
+
+        <div class="file-section">
+            <div class="file-header">
+                <h3>Kütüphane</h3>
+                <button type="button" onclick="loadFiles()" class="secondary-btn">
+                    <span>Yenile</span>
+                </button>
+            </div>
+            <ul id="file-list">
+                <li><span class="icon">⏳</span> Yükleniyor...</li>
+            </ul>
         </div>
-        <ul id="file-list">
-            <li>Yükleniyor...</li>
-        </ul>
     </div>
 
     <script>
         // Dosyaları sunucudan çekip listeleme
         async function loadFiles() {
             const fileList = document.getElementById('file-list');
-            fileList.innerHTML = '<li>Yükleniyor...</li>';
+            fileList.innerHTML = '<li><span class="icon">⏳</span> Yükleniyor...</li>';
             try {
                 const res = await fetch('/files');
                 const data = await res.json();
@@ -53,14 +288,14 @@
                 if (data.files && data.files.length > 0) {
                     data.files.forEach(file => {
                         const li = document.createElement('li');
-                        li.textContent = '🎵 ' + file;
+                        li.innerHTML = `<span class="icon">🎵</span> ${file}`;
                         fileList.appendChild(li);
                     });
                 } else {
-                    fileList.innerHTML = '<li style="color: #888;">Henüz indirilen dosya yok.</li>';
+                    fileList.innerHTML = '<li><span class="icon">📂</span> Henüz indirilen dosya yok.</li>';
                 }
             } catch (error) {
-                fileList.innerHTML = '<li style="color: red;">Dosyalar yüklenemedi.</li>';
+                fileList.innerHTML = '<li style="color: var(--danger-neon);"><span class="icon">❌</span> Dosyalar yüklenemedi.</li>';
             }
         }
 
@@ -73,8 +308,12 @@
             const statusText = document.getElementById('status-text');
             const logContainer = document.getElementById('log-container');
             
+            // Modern Loading State
             submitBtn.disabled = true;
-            statusText.innerHTML = '<span class="spinner">⏳</span> İşlem başlatılıyor...';
+            submitBtn.innerHTML = '<div class="spinner"></div><span>Başlatılıyor...</span>';
+            
+            statusText.style.color = "var(--text-primary)";
+            statusText.innerHTML = 'İndirme emri sunucuya iletiliyor...';
             logContainer.style.display = 'none';
             logContainer.innerText = '';
             
@@ -87,14 +326,21 @@
                 if (data.status === 'started' && data.task_id) {
                     checkStatus(data.task_id, submitBtn, statusText, logContainer);
                 } else {
+                    resetButton(submitBtn);
+                    statusText.style.color = "var(--danger-neon)";
                     statusText.innerText = "Hata: " + data.message;
-                    submitBtn.disabled = false;
                 }
             } catch (error) {
+                resetButton(submitBtn);
+                statusText.style.color = "var(--danger-neon)";
                 statusText.innerText = "Bağlantı hatası!";
-                submitBtn.disabled = false;
             }
         };
+        
+        function resetButton(btn) {
+            btn.disabled = false;
+            btn.innerHTML = '<span>İndir</span>';
+        }
 
         function checkStatus(taskId, btn, statusText, logContainer) {
             const interval = setInterval(async () => {
@@ -104,26 +350,31 @@
                     
                     if (statusData.status === 'completed' || statusData.status === 'error') {
                         clearInterval(interval);
-                        btn.disabled = false;
+                        resetButton(btn);
                         
-                        statusText.innerText = statusData.status === 'completed' ? '✅ ' + statusData.message : '❌ ' + statusData.message;
+                        if (statusData.status === 'completed') {
+                            statusText.style.color = "var(--primary-neon)";
+                            statusText.innerText = '✅ İndirme başarıyla tamamlandı!';
+                            loadFiles(); // Başarılıysa listeyi yenile
+                            document.querySelector('input[name="url"]').value = ''; // Inputu temizle
+                        } else {
+                            statusText.style.color = "var(--danger-neon)";
+                            statusText.innerText = '❌ Hata: ' + statusData.message;
+                        }
                         
                         if (statusData.log) {
                             logContainer.style.display = 'block';
                             logContainer.innerText = statusData.log;
                         }
-                        
-                        if (statusData.status === 'completed') {
-                            loadFiles();
-                        }
-                        
                     } else {
-                        statusText.innerHTML = '<span class="spinner">⏳</span> ' + statusData.message;
+                        // Processing state with spinner
+                        statusText.style.color = "var(--text-secondary)";
+                        statusText.innerHTML = `<span class="spinner" style="color: var(--text-secondary); margin-right: 10px;"></span> ${statusData.message}`;
                     }
                 } catch (error) {
                     console.error("Durum kontrolü başarısız:", error);
                 }
-            }, 3000);
+            }, 3000); // 3 saniyede bir durumu sorgula
         }
     </script>
 </body>
