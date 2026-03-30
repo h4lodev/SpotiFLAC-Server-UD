@@ -40,7 +40,7 @@ If you are using [Runtipi](https://runtipi.io/) to manage your home server, foll
         Name it spotiflac.
 
         Paste the following YAML configuration:
-        ```YAML
+        ```yaml
 
         services:
           spotiflac:
@@ -55,9 +55,9 @@ If you are using [Runtipi](https://runtipi.io/) to manage your home server, foll
               internal_port: 5000
 
         x-runtipi:
-          schema_version: 2
+          schema_version: 2```
 
-        Click Install. You can now access SpotiFLAC Server directly from your Runtipi dashboard!```
+        Click Install. You can now access SpotiFLAC Server directly from your Runtipi dashboard!
 
 ### Option B: Standalone Docker Compose
 
@@ -75,9 +75,9 @@ If you are not using Runtipi, you can run it using standard Docker Compose:
     Build and start the container:
     ```bash
 
-    docker compose up -d --build
+    docker compose up -d --build```
 
-    Access the web interface at http://<your-server-ip>:5000.```
+    Access the web interface at http://<your-server-ip>:5000.
 
 ### ⚙️ Usage
 
@@ -94,15 +94,15 @@ If you are not using Runtipi, you can run it using standard Docker Compose:
 
 ### 🛠️ Tech Stack
 
-    **Backend: Python, Flask, Gunicorn**
+- Backend: Python, Flask, Gunicorn
 
-    **Frontend: HTML5, CSS3, Vanilla JS (AJAX Polling, DOM Manipulation)**
+- Frontend: HTML5, CSS3, Vanilla JS (AJAX Polling, DOM Manipulation)
 
-    **Core Downloader: SpotiFLAC (PyPI)**
+- Core Downloader: SpotiFLAC (PyPI)
 
-    **Audio Processing: FFmpeg**
+- Audio Processing: FFmpeg
 
-    **Containerization: Docker**
+- Containerization: Docker
 
 ### 📝 License
 
