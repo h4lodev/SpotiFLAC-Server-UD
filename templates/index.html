@@ -3,100 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SpotiFLAC Server</title>
+    <title>SpotiFLAC Studio</title>
     <style>
-        /* Modern & Sophisticated Dark Theme */
         :root {
-            --bg-body: #000000;
-            --bg-container: #121212;
-            --bg-input: #1e1e1e;
-            --bg-input-focus: #2a2a2a;
-            --primary-neon: #1DB954;
-            --primary-hover: #21e065;
-            --text-primary: #FFFFFF;
-            --text-secondary: #A0A0A0;
-            --border-muted: #282828;
-            --danger-neon: #ff4d4d;
+            --bg-body: #000000; --bg-container: #121212; --bg-input: #1e1e1e; --bg-input-focus: #2a2a2a;
+            --primary-neon: #1DB954; --primary-hover: #21e065; --text-primary: #FFFFFF;
+            --text-secondary: #A0A0A0; --border-muted: #282828; --danger-neon: #ff4d4d;
             --font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
         }
 
-        body {
-            font-family: var(--font-family);
-            background-color: var(--bg-body);
-            color: var(--text-primary);
-            display: flex;
-            justify-content: center;
-            padding: 50px 20px;
-            margin: 0;
-            line-height: 1.6;
-            -webkit-font-smoothing: antialiased;
-        }
+        body { font-family: var(--font-family); background-color: var(--bg-body); color: var(--text-primary); display: flex; justify-content: center; padding: 50px 20px; margin: 0; line-height: 1.6; -webkit-font-smoothing: antialiased; position: relative; }
+        
+        /* Language Switcher */
+        .lang-switch { position: absolute; top: 20px; right: 20px; display: flex; gap: 10px; background: var(--bg-input); padding: 5px; border-radius: 20px; border: 1px solid var(--border-muted); }
+        .lang-btn { background: transparent; border: none; color: var(--text-secondary); cursor: pointer; padding: 5px 10px; border-radius: 15px; font-size: 13px; font-weight: 600; transition: all 0.2s; }
+        .lang-btn.active { background: var(--primary-neon); color: #000; }
 
-        .container {
-            background-color: var(--bg-container);
-            width: 100%;
-            max-width: 680px;
-            padding: 40px;
-            border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
-            border: 1px solid var(--border-muted);
-        }
-
+        .container { background-color: var(--bg-container); width: 100%; max-width: 680px; padding: 40px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.6); border: 1px solid var(--border-muted); margin-top: 20px;}
         h2 { text-align: center; margin-top: 0; margin-bottom: 35px; font-size: 32px; font-weight: 800; letter-spacing: -1px; text-transform: lowercase; }
-        h2 span.spot { color: var(--text-primary); }
-        h2 span.flac { color: var(--primary-neon); text-shadow: 0 0 10px rgba(29, 185, 84, 0.5); }
+        h2 span.spot { color: var(--text-primary); } h2 span.flac { color: var(--primary-neon); text-shadow: 0 0 10px rgba(29, 185, 84, 0.5); }
 
         form#mainForm { margin-bottom: 25px; }
-
-        .download-bar {
-            display: flex;
-            background-color: var(--bg-input);
-            border-radius: 50px;
-            padding: 4px;
-            border: 1px solid transparent;
-            transition: border-color 0.3s ease, background-color 0.3s ease;
-            margin-bottom: 15px;
-        }
-
-        .download-bar:focus-within {
-            border-color: var(--border-muted);
-            background-color: var(--bg-input-focus);
-        }
-
-        input[type="text"] {
-            flex: 1; padding: 14px 25px; border-radius: 50px; border: none; background-color: transparent; color: var(--text-primary); font-size: 16px; outline: none;
-        }
+        .download-bar { display: flex; background-color: var(--bg-input); border-radius: 50px; padding: 4px; border: 1px solid transparent; transition: border-color 0.3s ease, background-color 0.3s ease; margin-bottom: 15px; }
+        .download-bar:focus-within { border-color: var(--border-muted); background-color: var(--bg-input-focus); }
+        input[type="text"] { flex: 1; padding: 14px 25px; border-radius: 50px; border: none; background-color: transparent; color: var(--text-primary); font-size: 16px; outline: none; }
         input[type="text"]::placeholder { color: var(--text-secondary); }
 
-        button.primary-btn {
-            background-color: var(--primary-neon); color: #000000; font-weight: 700; border: none; padding: 14px 30px; border-radius: 50px; cursor: pointer; font-size: 15px; transition: background-color 0.2s ease, transform 0.1s ease; display: flex; align-items: center; gap: 8px;
-        }
+        button.primary-btn { background-color: var(--primary-neon); color: #000000; font-weight: 700; border: none; padding: 14px 30px; border-radius: 50px; cursor: pointer; font-size: 15px; transition: background-color 0.2s ease, transform 0.1s ease; display: flex; align-items: center; gap: 8px; }
         button.primary-btn:hover:not(:disabled) { background-color: var(--primary-hover); }
         button.primary-btn:active:not(:disabled) { transform: scale(0.98); }
         button.primary-btn:disabled { background-color: #333333; color: #777777; cursor: not-allowed; }
 
-        /* Settings Panel Styles */
-        details.settings-panel {
-            background-color: var(--bg-input);
-            border-radius: 12px;
-            border: 1px solid var(--border-muted);
-            overflow: hidden;
-            transition: all 0.3s ease;
-        }
-        details.settings-panel summary {
-            padding: 14px 20px; cursor: pointer; font-size: 14px; font-weight: 600; color: var(--text-secondary); list-style: none; display: flex; align-items: center; gap: 8px; user-select: none;
-        }
+        details.settings-panel { background-color: var(--bg-input); border-radius: 12px; border: 1px solid var(--border-muted); overflow: hidden; transition: all 0.3s ease; }
+        details.settings-panel summary { padding: 14px 20px; cursor: pointer; font-size: 14px; font-weight: 600; color: var(--text-secondary); list-style: none; display: flex; align-items: center; gap: 8px; user-select: none; }
         details.settings-panel summary::-webkit-details-marker { display: none; }
         details.settings-panel summary:hover { color: var(--text-primary); background-color: var(--bg-input-focus); }
         
-        .settings-content {
-            padding: 0 20px 20px 20px; display: flex; flex-direction: column; gap: 15px; border-top: 1px solid var(--border-muted); margin-top: 5px; padding-top: 15px;
-        }
+        .settings-content { padding: 0 20px 20px 20px; display: flex; flex-direction: column; gap: 15px; border-top: 1px solid var(--border-muted); margin-top: 5px; padding-top: 15px; }
         .setting-group { display: flex; flex-direction: column; gap: 6px; }
         .setting-group label { font-size: 13px; color: var(--text-secondary); font-weight: 500; }
-        .setting-group select {
-            background-color: #000000; color: var(--text-primary); border: 1px solid var(--border-muted); padding: 10px; border-radius: 8px; font-size: 14px; outline: none; cursor: pointer;
-        }
+        .setting-group select { background-color: #000000; color: var(--text-primary); border: 1px solid var(--border-muted); padding: 10px; border-radius: 8px; font-size: 14px; outline: none; cursor: pointer; }
         .setting-group select:focus { border-color: var(--primary-neon); }
         .setting-group select:disabled { opacity: 0.6; cursor: not-allowed; }
 
@@ -106,7 +52,6 @@
         .spinner { width: 16px; height: 16px; border: 2px solid rgba(255, 255, 255, 0.2); border-radius: 50%; border-top-color: currentColor; animation: spin 0.8s linear infinite; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
 
-        /* File List */
         .file-section { margin-top: 45px; padding-top: 30px; border-top: 1px solid var(--border-muted); }
         .file-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .file-header h3 { margin: 0; font-size: 20px; font-weight: 700; letter-spacing: -0.5px; }
@@ -128,43 +73,49 @@
 </head>
 <body>
 
+    <div class="lang-switch">
+        <button class="lang-btn active" onclick="setLang('tr')">TR</button>
+        <button class="lang-btn" onclick="setLang('en')">EN</button>
+    </div>
+
     <div class="container">
         <h2><span class="spot">Spoti</span><span class="flac">FLAC</span></h2>
         
         <form id="mainForm">
+            <input type="hidden" name="lang" id="langInput" value="tr">
             <div class="download-bar">
-                <input type="text" name="url" placeholder="Spotify Linkini Yapıştır (Albüm, Çalma Listesi...)" required autocomplete="off">
+                <input type="text" name="url" id="urlInput" placeholder="Spotify Linkini Yapıştır (Albüm, Çalma Listesi...)" required autocomplete="off">
                 <button type="submit" id="submitBtn" class="primary-btn">
-                    <span>İndir</span>
+                    <span id="btnDownloadText">İndir</span>
                 </button>
             </div>
 
             <details class="settings-panel">
-                <summary><span style="font-size: 16px;">⚙️</span> İndirme Ayarları</summary>
+                <summary><span style="font-size: 16px;">⚙️</span> <span id="settingsTitle">İndirme Ayarları</span></summary>
                 <div class="settings-content">
                     <div class="setting-group">
-                        <label>Kaynak Servis (Müziğin Çekileceği Platform)</label>
+                        <label id="lblSource">Kaynak Servis (Müziğin Çekileceği Platform)</label>
                         <select name="service">
-                            <option value="tidal">Tidal (Varsayılan - Yüksek Başarı)</option>
-                            <option value="qobuz">Qobuz (Odyofil Tercihi)</option>
+                            <option value="tidal" id="optTidal">Tidal (Varsayılan - Yüksek Başarı)</option>
+                            <option value="qobuz" id="optQobuz">Qobuz (Odyofil Tercihi)</option>
                             <option value="deezer">Deezer</option>
                             <option value="amazon">Amazon Music</option>
                         </select>
                     </div>
                     
                     <div class="setting-group">
-                        <label>Klasör Düzeni</label>
+                        <label id="lblFolder">Klasör Düzeni</label>
                         <select name="folder_structure">
-                            <option value="artist_album">Sanatçı / Albüm / Şarkılar (Önerilen)</option>
-                            <option value="artist">Sanatçı / Şarkılar</option>
-                            <option value="flat">Tümünü İndirilenlere At (Düz)</option>
+                            <option value="artist_album" id="optArtistAlbum">Sanatçı / Albüm / Şarkılar (Önerilen)</option>
+                            <option value="artist" id="optArtist">Sanatçı / Şarkılar</option>
+                            <option value="flat" id="optFlat">Tümünü İndirilenlere At (Düz)</option>
                         </select>
                     </div>
 
                     <div class="setting-group">
-                        <label>Ses Kalitesi</label>
+                        <label id="lblQuality">Ses Kalitesi</label>
                         <select disabled>
-                            <option>Hi-Res Lossless FLAC (Sabit Format)</option>
+                            <option id="optQuality">Hi-Res Lossless FLAC (Sabit Format)</option>
                         </select>
                     </div>
                 </div>
@@ -176,21 +127,106 @@
 
         <div class="file-section">
             <div class="file-header">
-                <h3>Kütüphane</h3>
+                <h3 id="libTitle">Kütüphane</h3>
                 <button type="button" onclick="loadFiles()" class="secondary-btn">
-                    <span>Yenile</span>
+                    <span id="btnRefreshText">Yenile</span>
                 </button>
             </div>
             <ul id="file-list">
-                <li><span class="icon">⏳</span> Yükleniyor...</li>
+                <li><span class="icon">⏳</span> <span class="loading-text">Yükleniyor...</span></li>
             </ul>
         </div>
     </div>
 
     <script>
+        // Dil Sözlüğü
+        const i18n = {
+            'tr': {
+                urlPlaceholder: "Spotify Linkini Yapıştır (Albüm, Çalma Listesi...)",
+                btnDownload: "İndir",
+                settingsTitle: "İndirme Ayarları",
+                lblSource: "Kaynak Servis (Müziğin Çekileceği Platform)",
+                optTidal: "Tidal (Varsayılan - Yüksek Başarı)",
+                optQobuz: "Qobuz (Odyofil Tercihi)",
+                lblFolder: "Klasör Düzeni",
+                optArtistAlbum: "Sanatçı / Albüm / Şarkılar (Önerilen)",
+                optArtist: "Sanatçı / Şarkılar",
+                optFlat: "Tümünü İndirilenlere At (Düz)",
+                lblQuality: "Ses Kalitesi",
+                optQuality: "Hi-Res Lossless FLAC (Sabit Format)",
+                libTitle: "Kütüphane",
+                btnRefresh: "Yenile",
+                loading: "Yükleniyor...",
+                noFiles: "Henüz indirilen dosya yok.",
+                filesError: "Dosyalar yüklenemedi.",
+                starting: "Başlatılıyor...",
+                sending: "İndirme emri sunucuya iletiliyor...",
+                connError: "Bağlantı hatası!"
+            },
+            'en': {
+                urlPlaceholder: "Paste Spotify Link (Album, Playlist...)",
+                btnDownload: "Download",
+                settingsTitle: "Download Settings",
+                lblSource: "Source Service (Platform to fetch music)",
+                optTidal: "Tidal (Default - High Success)",
+                optQobuz: "Qobuz (Audiophile Choice)",
+                lblFolder: "Folder Layout",
+                optArtistAlbum: "Artist / Album / Tracks (Recommended)",
+                optArtist: "Artist / Tracks",
+                optFlat: "Dump all into Downloads (Flat)",
+                lblQuality: "Audio Quality",
+                optQuality: "Hi-Res Lossless FLAC (Fixed Format)",
+                libTitle: "Library",
+                btnRefresh: "Refresh",
+                loading: "Loading...",
+                noFiles: "No downloaded files yet.",
+                filesError: "Failed to load files.",
+                starting: "Starting...",
+                sending: "Sending download request to server...",
+                connError: "Connection error!"
+            }
+        };
+
+        let currentLang = 'tr';
+
+        function setLang(lang) {
+            currentLang = lang;
+            document.getElementById('langInput').value = lang;
+            
+            // Butonları güncelle
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Metinleri güncelle
+            document.getElementById('urlInput').placeholder = i18n[lang].urlPlaceholder;
+            
+            // Sadece buton aktifken metni değiştir (yükleniyor durumu bozulmasın diye)
+            if(!document.getElementById('submitBtn').disabled) {
+                document.getElementById('btnDownloadText').innerText = i18n[lang].btnDownload;
+            }
+            
+            document.getElementById('settingsTitle').innerText = i18n[lang].settingsTitle;
+            document.getElementById('lblSource').innerText = i18n[lang].lblSource;
+            document.getElementById('optTidal').innerText = i18n[lang].optTidal;
+            document.getElementById('optQobuz').innerText = i18n[lang].optQobuz;
+            document.getElementById('lblFolder').innerText = i18n[lang].lblFolder;
+            document.getElementById('optArtistAlbum').innerText = i18n[lang].optArtistAlbum;
+            document.getElementById('optArtist').innerText = i18n[lang].optArtist;
+            document.getElementById('optFlat').innerText = i18n[lang].optFlat;
+            document.getElementById('lblQuality').innerText = i18n[lang].lblQuality;
+            document.getElementById('optQuality').innerText = i18n[lang].optQuality;
+            document.getElementById('libTitle').innerText = i18n[lang].libTitle;
+            document.getElementById('btnRefreshText').innerText = i18n[lang].btnRefresh;
+            
+            // Eğer liste yükleniyorsa veya boşsa içindeki statik metni de çevir
+            document.querySelectorAll('.loading-text').forEach(el => el.innerText = i18n[lang].loading);
+            document.querySelectorAll('.empty-text').forEach(el => el.innerText = i18n[lang].noFiles);
+            document.querySelectorAll('.error-text').forEach(el => el.innerText = i18n[lang].filesError);
+        }
+
         async function loadFiles() {
             const fileList = document.getElementById('file-list');
-            fileList.innerHTML = '<li><span class="icon">⏳</span> Yükleniyor...</li>';
+            fileList.innerHTML = `<li><span class="icon">⏳</span> <span class="loading-text">${i18n[currentLang].loading}</span></li>`;
             try {
                 const res = await fetch('/files');
                 const data = await res.json();
@@ -203,10 +239,10 @@
                         fileList.appendChild(li);
                     });
                 } else {
-                    fileList.innerHTML = '<li><span class="icon">📂</span> Henüz indirilen dosya yok.</li>';
+                    fileList.innerHTML = `<li><span class="icon">📂</span> <span class="empty-text">${i18n[currentLang].noFiles}</span></li>`;
                 }
             } catch (error) {
-                fileList.innerHTML = '<li style="color: var(--danger-neon);"><span class="icon">❌</span> Dosyalar yüklenemedi.</li>';
+                fileList.innerHTML = `<li style="color: var(--danger-neon);"><span class="icon">❌</span> <span class="error-text">${i18n[currentLang].filesError}</span></li>`;
             }
         }
 
@@ -220,14 +256,13 @@
             const logContainer = document.getElementById('log-container');
             
             submitBtn.disabled = true;
-            submitBtn.innerHTML = '<div class="spinner"></div><span>Başlatılıyor...</span>';
+            submitBtn.innerHTML = `<div class="spinner"></div><span>${i18n[currentLang].starting}</span>`;
             
             statusText.style.color = "var(--text-primary)";
-            statusText.innerHTML = 'İndirme emri sunucuya iletiliyor...';
+            statusText.innerHTML = i18n[currentLang].sending;
             logContainer.style.display = 'none';
             logContainer.innerText = '';
             
-            // Form verileri (URL ve ayarlar dahil) tek seferde çekilir
             const formData = new FormData(e.target);
             
             try {
@@ -239,24 +274,25 @@
                 } else {
                     resetButton(submitBtn);
                     statusText.style.color = "var(--danger-neon)";
-                    statusText.innerText = "Hata: " + data.message;
+                    statusText.innerText = (currentLang === 'tr' ? "Hata: " : "Error: ") + data.message;
                 }
             } catch (error) {
                 resetButton(submitBtn);
                 statusText.style.color = "var(--danger-neon)";
-                statusText.innerText = "Bağlantı hatası!";
+                statusText.innerText = i18n[currentLang].connError;
             }
         };
         
         function resetButton(btn) {
             btn.disabled = false;
-            btn.innerHTML = '<span>İndir</span>';
+            btn.innerHTML = `<span id="btnDownloadText">${i18n[currentLang].btnDownload}</span>`;
         }
 
         function checkStatus(taskId, btn, statusText, logContainer) {
             const interval = setInterval(async () => {
                 try {
-                    const res = await fetch(`/status/${taskId}`);
+                    // Dil parametresini de arka uca gönderiyoruz
+                    const res = await fetch(`/status/${taskId}?lang=${currentLang}`);
                     const statusData = await res.json();
                     
                     if (statusData.status === 'completed' || statusData.status === 'error') {
@@ -265,12 +301,12 @@
                         
                         if (statusData.status === 'completed') {
                             statusText.style.color = "var(--primary-neon)";
-                            statusText.innerText = '✅ İndirme başarıyla tamamlandı!';
+                            statusText.innerText = '✅ ' + statusData.message;
                             loadFiles(); 
                             document.querySelector('input[name="url"]').value = ''; 
                         } else {
                             statusText.style.color = "var(--danger-neon)";
-                            statusText.innerText = '❌ Hata: ' + statusData.message;
+                            statusText.innerText = '❌ ' + (currentLang === 'tr' ? "Hata: " : "Error: ") + statusData.message;
                         }
                         
                         if (statusData.log) {

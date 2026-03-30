@@ -7,35 +7,44 @@ import os
 app = Flask(__name__)
 DOWNLOAD_DIR = "/downloads"
 
-# Görev durumlarını bellekte tutacağımız basit bir sözlük
 tasks = {}
 
-def run_download(task_id, url, folder_structure, service):
-    """Arka planda çalışacak asıl indirme fonksiyonu"""
+# Dil sözlüğü
+MESSAGES = {
+    'tr': {
+        'no_url': "Lütfen bir Spotify linki girin.",
+        'processing': "İndirme arka planda devam ediyor...",
+        'completed': "İndirme başarıyla tamamlandı!",
+        'error': "Bir hata oluştu.",
+        'not_found': "Görev bulunamadı."
+    },
+    'en': {
+        'no_url': "Please enter a Spotify link.",
+        'processing': "Download is processing in the background...",
+        'completed': "Download completed successfully!",
+        'error': "An error occurred.",
+        'not_found': "Task not found."
+    }
+}
+
+def run_download(task_id, url, folder_structure, service, lang):
     try:
         cmd = ["spotiflac", url, DOWNLOAD_DIR]
         
-        # Seçilen servisi komuta ekle
         if service in ['tidal', 'qobuz', 'deezer', 'amazon']:
             cmd.extend(["--service", service])
             
-        # Klasör yapısı tercihlerini komuta ekle
         if folder_structure == 'artist_album':
             cmd.extend(["--use-artist-subfolders", "--use-album-subfolders"])
         elif folder_structure == 'artist':
             cmd.extend(["--use-artist-subfolders"])
-        # 'flat' seçilirse hiçbir parametre eklenmez, düz indirir.
 
-        process = subprocess.run(
-            cmd,
-            capture_output=True, 
-            text=True
-        )
+        process = subprocess.run(cmd, capture_output=True, text=True)
         
         if process.returncode == 0:
-            tasks[task_id] = {"status": "completed", "message": "İndirme başarıyla tamamlandı!", "log": process.stdout}
+            tasks[task_id] = {"status": "completed", "message": MESSAGES[lang]['completed'], "log": process.stdout}
         else:
-            tasks[task_id] = {"status": "error", "message": "Bir hata oluştu.", "log": process.stderr}
+            tasks[task_id] = {"status": "error", "message": MESSAGES[lang]['error'], "log": process.stderr}
             
     except Exception as e:
         tasks[task_id] = {"status": "error", "message": str(e), "log": ""}
@@ -47,27 +56,28 @@ def index():
 @app.route('/download', methods=['POST'])
 def download():
     url = request.form.get('url')
+    lang = request.form.get('lang', 'tr')
+    
     if not url:
-        return jsonify({"status": "error", "message": "Lütfen bir Spotify linki girin."}), 400
+        return jsonify({"status": "error", "message": MESSAGES[lang]['no_url']}), 400
 
-    # Arayüzden gelen ayarları al, boşsa varsayılanları kullan
     folder_structure = request.form.get('folder_structure', 'artist_album')
     service = request.form.get('service', 'tidal')
 
     task_id = str(uuid.uuid4())
-    tasks[task_id] = {"status": "processing", "message": "İndirme arka planda devam ediyor...", "log": ""}
+    tasks[task_id] = {"status": "processing", "message": MESSAGES[lang]['processing'], "log": ""}
     
-    # Ayarları thread'e gönder
-    thread = threading.Thread(target=run_download, args=(task_id, url, folder_structure, service))
+    thread = threading.Thread(target=run_download, args=(task_id, url, folder_structure, service, lang))
     thread.start()
     
     return jsonify({"status": "started", "task_id": task_id})
 
 @app.route('/status/<task_id>', methods=['GET'])
 def status(task_id):
+    lang = request.args.get('lang', 'tr')
     task = tasks.get(task_id)
     if not task:
-        return jsonify({"status": "error", "message": "Görev bulunamadı."}), 404
+        return jsonify({"status": "error", "message": MESSAGES[lang]['not_found']}), 404
     return jsonify(task)
 
 @app.route('/files', methods=['GET'])
