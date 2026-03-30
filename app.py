@@ -29,12 +29,15 @@ MESSAGES = {
 
 def run_download(task_id, url, folder_structure, service, lang):
     try:
-        # Arayüzden gelen formata göre modüle gidecek boolean değerleri belirliyoruz
-        use_artist = "True" if folder_structure in ['artist_album', 'artist'] else "False"
-        use_album = "True" if folder_structure == 'artist_album' else "False"
+        # SpotiFLAC'ın çalışmayan klasör parametrelerini tamamen devreden çıkarıp,
+        # klasör yapısını doğrudan dosya adı formatı üzerinden (slash ile) zorluyoruz.
+        if folder_structure == 'artist_album':
+            fname_format = "{artist}/{album}/{title}"
+        elif folder_structure == 'artist':
+            fname_format = "{artist}/{title}"
+        else:
+            fname_format = "{artist} - {title}"
 
-        # CLI (terminal) ayrıştırma bug'ını aşmak için, hafızada anlık bir Python
-        # betiği oluşturuyor ve doğrudan SpotiFLAC sınıfını (class) çağırıyoruz.
         py_script = f"""
 import sys
 from SpotiFLAC import SpotiFLAC
@@ -42,22 +45,22 @@ from SpotiFLAC import SpotiFLAC
 url = sys.argv[1]
 output_dir = sys.argv[2]
 service = sys.argv[3]
+fname_format = sys.argv[4]
 
 try:
     SpotiFLAC(
         url=url,
         output_dir=output_dir,
         services=[service],
-        use_artist_subfolders={use_artist},
-        use_album_subfolders={use_album}
+        filename_format=fname_format,
+        use_track_numbers=True  # Albümlerde şarkıların 1, 2, 3 diye sıraya girmesi için
     )
 except Exception as e:
     print(str(e), file=sys.stderr)
     sys.exit(1)
 """
-        # Oluşturduğumuz bu betiği güvenlik için argümanları (sys.argv) dışarıdan alacak şekilde tetikliyoruz
         process = subprocess.run(
-            ["python3", "-c", py_script, url, DOWNLOAD_DIR, service],
+            ["python3", "-c", py_script, url, DOWNLOAD_DIR, service, fname_format],
             capture_output=True, 
             text=True
         )
