@@ -1,10 +1,16 @@
+name: spotiflac-custom
 services:
-  spotiflac-server:
-    build: .
-    container_name: spotiflac-server
+  spotiflac:
+    build: .  # <--- EKSİK OLAN SİHİRLİ SATIR BURASI (Noktayı unutma)
+    image: spotiflac-server:latest
+    container_name: spotiflac-app
+    restart: unless-stopped
     ports:
       - "5000:5000"
     volumes:
-      # İndirilenlerin Navidrome'un okuduğu Runtipi medya klasörüne düşmesi için:
-      - /root/runtipi/runtipi/media/music:/downloads
-    restart: unless-stopped
+      - /DATA/Media/Music:/downloads
+      - /DATA/Media/Music:/app/downloads 
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Istanbul

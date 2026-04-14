@@ -99,6 +99,18 @@ If you are not using Runtipi, you can run it using standard Docker Compose:
 
 6. The UI will display the live progress. Once completed, the files will automatically appear in the Library section below and sync with your media server.
 
+### 🛠️ Tech Stack
+
+- Backend: Python, Flask, Gunicorn
+
+- Frontend: HTML5, CSS3, Vanilla JS (AJAX Polling, DOM Manipulation)
+
+- Core Downloader: SpotiFLAC (PyPI)
+
+- Audio Processing: FFmpeg
+
+- Containerization: Docker
+
 ## FAQ
 
 <details>
@@ -182,18 +194,6 @@ SpotiFLAC for command-line environments — maintained by [@Nizarberyan](https:/
 ### [SpotiFLAC (Python Module)](https://github.com/ShuShuzinhuu/SpotiFLAC-Module-Version)
 
 SpotiFLAC Python library for SpotiFLAC integration — maintained by [@ShuShuzinhuu](https://github.com/ShuShuzinhuu)
-
-### 🛠️ Tech Stack
-
-- Backend: Python, Flask, Gunicorn
-
-- Frontend: HTML5, CSS3, Vanilla JS (AJAX Polling, DOM Manipulation)
-
-- Core Downloader: SpotiFLAC (PyPI)
-
-- Audio Processing: FFmpeg
-
-- Containerization: Docker
 
 ### 📝 License
 

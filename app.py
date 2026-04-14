@@ -4,6 +4,32 @@ import threading
 import uuid
 import os
 
+# === MONKEY PATCH START (Cloudflare Bypass) ===
+try:
+    from SpotiFLAC.downloader.tidal import Tidal
+    from curl_cffi import requests as cffi_requests
+    import re
+
+    def spoofed_get_tidal_url(self, spotify_track_id: str) -> str:
+        print("🚀 Bypassing Cloudflare with curl_cffi Chrome 120 Spoofing...")
+        # Gerçek bir Windows/Chrome tarayıcısı gibi davranıyoruz
+        session = cffi_requests.Session(impersonate="chrome120")
+        url = f"https://song.link/s/{spotify_track_id}"
+        
+        resp = session.get(url, timeout=15)
+        match = re.search(r'https://listen\.tidal\.com/track/(\d+)', resp.text)
+        
+        if match:
+            return match.group(0)
+        raise Exception("Tidal link not found in spoofed HTML")
+
+    # SpotiFLAC'ın orijinal fonksiyonunu RAM üzerinde eziyoruz
+    Tidal.get_tidal_url_from_spotify = spoofed_get_tidal_url
+    print("✅ Monkey Patch Başarılı: Cloudflare kalkanı aktif!")
+except ImportError:
+    print("⚠️ Monkey Patch Başarısız: SpotiFLAC veya curl_cffi bulunamadı.")
+# === MONKEY PATCH END ===
+
 app = Flask(__name__)
 DOWNLOAD_DIR = "/downloads"
 
