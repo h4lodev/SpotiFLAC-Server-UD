@@ -7,6 +7,9 @@ A lightweight, modern, and asynchronous web interface for the [SpotiFLAC](https:
 ![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?style=flat-square&logo=docker&logoColor=white)
 ![Python](https://img.shields.io/badge/Python-3.11-3776AB?style=flat-square&logo=python&logoColor=white)
 
+## Preview
+![Preview](https://github.com/ACRZeuss/spotiflac-server/blob/main/preview.png)
+
 ## ✨ Features
 
 * **Modern Web Interface:** A beautifully crafted, responsive dark theme inspired by modern music streaming platforms.
