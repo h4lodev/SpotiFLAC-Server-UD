@@ -47,20 +47,26 @@ If you are using [Runtipi](https://runtipi.io/) to manage your home server, foll
     3. Paste the following YAML configuration:
 
     ```yaml
-    services:
-      spotiflac:
-        image: spotiflac-server:latest
-        container_name: spotiflac-server
-        volumes:
-          # Maps to Runtipi's default music directory
-          - /opt/runtipi/media/music:/downloads
-        restart: unless-stopped
-        x-runtipi:
-          is_main: true
-          internal_port: 5000
-
     x-runtipi:
       schema_version: 2
+
+    services:
+      spotiflac:
+      build: .
+      image: spotiflac-server:latest
+      container_name: spotiflac-server
+      restart: unless-stopped
+      x-runtipi:
+        internal_port: 5000
+        is_main: true
+      volumes:
+        # Runtipi'nin global medya klasörüne bağlıyoruz
+        - ${MEDIA_DIR}/Music:/downloads
+        - ${MEDIA_DIR}/Music:/app/downloads 
+      environment:
+        - PUID=1000
+        - PGID=1000
+        - TZ=Europe/Istanbul
     ```
 
     Click Install. You can now access SpotiFLAC Server directly from your Runtipi dashboard!
